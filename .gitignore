@@ -1,0 +1,12 @@
+### IntelliJ IDEA ###
+out/
+!**/src/main/**/out/
+# **/src/main/org/psu/java/example/out/
+# **/src/main/org/psu/java/example/application/out/
+# **/src/main/org/psu/java/example/domain/out/
+!**/src/test/**/out/
+.idea
+*.iml
+
+### Mac OS ###
+.DS_Store
