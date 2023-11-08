@@ -2,6 +2,7 @@ package org.psu.java.example.context;
 
 import org.psu.java.example.application.FortunateTicketService;
 import org.psu.java.example.domain.Ticket;
+import org.psu.java.example.infrastructure.GeneratorType;
 import org.psu.java.example.infrastructure.TicketGenerator;
 
 import java.util.*;
@@ -15,7 +16,7 @@ import java.util.function.Supplier;
  * Выводит количество шестизначных счастливых билетов
  */
 public class Tickets {
-    private static TicketGenerator generator = TicketGenerator.getInstance(6);
+    private static TicketGenerator generator = TicketGenerator.getInstance(GeneratorType.SIX);
     private static FortunateTicketService service = FortunateTicketService.getStreamInstance();
 
     public static void main(String[] args) {
