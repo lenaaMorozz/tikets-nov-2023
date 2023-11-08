@@ -7,12 +7,11 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 public interface TicketGenerator {
-    static TicketGenerator getInstance(int length) {
-        if (length == 6) {
-            return new LambdaTicketGenerator();
-        }
-
-        throw new IllegalArgumentException();
+    static TicketGenerator getInstance(GeneratorType type) {
+        return switch (type) {
+            case SIX -> new RecordTicketGenerator();
+            default -> throw new IllegalArgumentException();
+        };
     }
     Iterator<Ticket> getTickets();
     Optional<Ticket> getTicket(int number);
