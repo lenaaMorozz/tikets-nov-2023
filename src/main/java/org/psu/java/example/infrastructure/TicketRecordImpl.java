@@ -1,5 +1,6 @@
 package org.psu.java.example.infrastructure;
 
+import lombok.Getter;
 import org.psu.java.example.domain.Ticket;
 
 public record TicketRecordImpl(int length, long number) implements Ticket {

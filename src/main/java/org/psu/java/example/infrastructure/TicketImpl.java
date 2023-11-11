@@ -1,24 +1,18 @@
 package org.psu.java.example.infrastructure;
 
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.psu.java.example.domain.Ticket;
 import org.psu.java.example.utils.NumberUtils;
 
+@Getter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TicketImpl implements Ticket {
-    private final int length;
-    private final long number;
-
-    public TicketImpl(int length, long number) {
-        this.length = length;
-        this.number = number;
-    }
-
-    @Override
-    public int getLength() {
-        return length;
-    }
-
-    @Override
-    public long getNumber() {
-        return number;
-    }
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    int length;
+    long number;
 }

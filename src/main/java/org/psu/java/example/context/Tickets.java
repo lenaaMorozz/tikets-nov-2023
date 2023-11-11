@@ -16,7 +16,7 @@ import java.util.function.Supplier;
  * Выводит количество шестизначных счастливых билетов
  */
 public class Tickets {
-    private static TicketGenerator generator = TicketGenerator.getInstance(GeneratorType.SIX);
+    private static TicketGenerator generator = TicketGenerator.getInstance(GeneratorType.EIGHT);
     private static FortunateTicketService service = FortunateTicketService.getStreamInstance();
 
     public static void main(String[] args) {

@@ -4,20 +4,59 @@ import org.psu.java.example.domain.Ticket;
 
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
 public interface TicketGenerator {
     static TicketGenerator getInstance(GeneratorType type) {
         return switch (type) {
             case SIX -> new RecordTicketGenerator();
+            case EIGHT -> new EightDigitsTicketGenerator();
             default -> throw new IllegalArgumentException();
         };
     }
     Iterator<Ticket> getTickets();
     Optional<Ticket> getTicket(int number);
 
+
+}
+abstract class AbstractGenerator implements TicketGenerator {
+
+    protected abstract IntFunction<Ticket> toTicket();
+
+    protected abstract IntStream getNumbersAsStream();
+
+    @Override
+    public Iterator<Ticket> getTickets() {
+        return getNumbersAsStream().mapToObj(toTicket()).iterator();
+
+    }
 }
 
+class EightDigitsTicketGenerator extends AbstractGenerator {
+
+    @Override
+    public Optional<Ticket> getTicket(int number) {
+        return Optional.empty();
+    }
+
+    @Override
+    protected IntFunction<Ticket> toTicket() {
+        return number -> (TheTicket) () -> number;
+    }
+
+    @Override
+    protected IntStream getNumbersAsStream() {
+        return IntStream.rangeClosed(0, 100_000_000);
+    }
+
+    interface TheTicket extends Ticket {
+        @Override
+        default int getLength() {
+            return 8;
+        }
+    }
+}
 class SixDigitsTicketGenerator implements TicketGenerator {
 
     @Override
@@ -28,7 +67,6 @@ class SixDigitsTicketGenerator implements TicketGenerator {
                 .map(Ticket.class::cast)
                 .iterator();
     }
-
     @Override
     public Optional<Ticket> getTicket(final int number) {
         if (number < 0 || number >= 1000000) {
@@ -38,17 +76,7 @@ class SixDigitsTicketGenerator implements TicketGenerator {
     }
 }
 
-class RecordTicketGenerator implements TicketGenerator {
-
-    @Override
-    public Iterator<Ticket> getTickets() {
-        return IntStream
-                .rangeClosed(0, 1000000)
-                .mapToObj(number -> new TicketRecordImpl(6, number))
-                .map(Ticket.class::cast)
-                .iterator();
-
-    }
+class RecordTicketGenerator extends AbstractGenerator {
 
     @Override
     public Optional<Ticket> getTicket(int number) {
@@ -57,17 +85,28 @@ class RecordTicketGenerator implements TicketGenerator {
         }
         return Optional.of(new TicketRecordImpl(6, number));
     }
-}
-
-class LambdaTicketGenerator implements TicketGenerator {
 
     @Override
-    public Iterator<Ticket> getTickets() {
-        return IntStream
-                .rangeClosed(0, 1000000)
-                .mapToObj(number -> (SixDigitTicket) () -> number)
-                .map(Ticket.class::cast)
-                .iterator();
+    protected IntFunction<Ticket> toTicket() {
+        return number -> new TicketRecordImpl(6, number);
+    }
+
+    @Override
+    protected IntStream getNumbersAsStream() {
+        return IntStream.rangeClosed(0, 1000000);
+    }
+}
+
+class LambdaTicketGenerator extends AbstractGenerator {
+
+    @Override
+    protected IntFunction<Ticket> toTicket() {
+       return number -> (SixDigitTicket) () -> number;
+    }
+
+    @Override
+    protected IntStream getNumbersAsStream() {
+        return IntStream.rangeClosed(0, 1000000);
     }
 
     @Override
