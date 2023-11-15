@@ -17,8 +17,6 @@ public interface TicketGenerator {
     }
     Iterator<Ticket> getTickets();
     Optional<Ticket> getTicket(int number);
-
-
 }
 abstract class AbstractGenerator implements TicketGenerator {
 
@@ -29,7 +27,11 @@ abstract class AbstractGenerator implements TicketGenerator {
     @Override
     public Iterator<Ticket> getTickets() {
         return getNumbersAsStream().mapToObj(toTicket()).iterator();
+    }
 
+    @Override
+    public Optional<Ticket> getTicket(int number) {
+        return Optional.empty();
     }
 }
 
@@ -67,12 +69,13 @@ class SixDigitsTicketGenerator implements TicketGenerator {
                 .map(Ticket.class::cast)
                 .iterator();
     }
+
     @Override
     public Optional<Ticket> getTicket(final int number) {
-        if (number < 0 || number >= 1000000) {
-            return Optional.empty();
-        }
-        return Optional.of(new TicketImpl(6, number));
+        return Optional
+                .of(number)
+                .filter(n -> number < 0 || number >= 1000000)
+                .map(n -> new TicketImpl(6, n));
     }
 }
 
