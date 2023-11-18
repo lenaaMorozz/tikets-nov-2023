@@ -35,7 +35,8 @@ class FortunateTicketStreamImpl implements FortunateTicketService {
         Iterable<Ticket> iterable = () -> tickets;
         Stream<Ticket> ticketStream =
                 StreamSupport.stream(iterable.spliterator(), false);
-        return (int) ticketStream.filter(Ticket::isFortunate).count();
+        return (int) ticketStream
+                .filter(Ticket::isFortunate).count();
 
     }
 }
