@@ -1,10 +1,13 @@
 package org.psu.java.example.infrastructure;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.psu.java.example.domain.Ticket;
 
 import java.util.Iterator;
 import java.util.Optional;
-import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
 public interface TicketGenerator {
@@ -18,38 +21,44 @@ public interface TicketGenerator {
     Iterator<Ticket> getTickets();
     Optional<Ticket> getTicket(int number);
 }
+
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 abstract class AbstractGenerator implements TicketGenerator {
+    @Getter(AccessLevel.PROTECTED)
+    int length;
 
-    protected abstract IntFunction<Ticket> toTicket();
+    protected abstract Ticket toTicket(int number);
 
-    protected abstract IntStream getNumbersAsStream();
+    protected IntStream getNumbersAsStream() {
+        var maxNumber = (int) Math.pow(10, length);
+        return IntStream.rangeClosed(0, maxNumber);
+    }
 
     @Override
     public Iterator<Ticket> getTickets() {
-        return getNumbersAsStream().mapToObj(toTicket()).iterator();
+        return getNumbersAsStream().mapToObj(this::toTicket).iterator();
     }
 
     @Override
     public Optional<Ticket> getTicket(int number) {
-        return Optional.empty();
+        var maxNumber = Math.pow(10, length);
+        return Optional
+                .of(number)
+                .filter(n -> number >= 0 && number < maxNumber)
+                .map(this::toTicket);
     }
 }
 
 class EightDigitsTicketGenerator extends AbstractGenerator {
 
-    @Override
-    public Optional<Ticket> getTicket(int number) {
-        return Optional.empty();
+    public EightDigitsTicketGenerator() {
+        super(8);
     }
 
     @Override
-    protected IntFunction<Ticket> toTicket() {
-        return number -> (TheTicket) () -> number;
-    }
-
-    @Override
-    protected IntStream getNumbersAsStream() {
-        return IntStream.rangeClosed(0, 100_000_000);
+    protected Ticket toTicket(int number) {
+        return  (TheTicket) () -> number;
     }
 
     interface TheTicket extends Ticket {
@@ -74,53 +83,35 @@ class SixDigitsTicketGenerator implements TicketGenerator {
     public Optional<Ticket> getTicket(final int number) {
         return Optional
                 .of(number)
-                .filter(n -> number < 0 || number >= 1000000)
+                .filter(n -> number >= 0 && number < 1000000)
                 .map(n -> new TicketImpl(6, n));
     }
 }
 
 class RecordTicketGenerator extends AbstractGenerator {
 
-    @Override
-    public Optional<Ticket> getTicket(int number) {
-        if (number < 0 || number >= 1000000) {
-            return Optional.empty();
-        }
-        return Optional.of(new TicketRecordImpl(6, number));
+    public RecordTicketGenerator() {
+        super(6);
     }
 
     @Override
-    protected IntFunction<Ticket> toTicket() {
-        return number -> new TicketRecordImpl(6, number);
-    }
-
-    @Override
-    protected IntStream getNumbersAsStream() {
-        return IntStream.rangeClosed(0, 1000000);
+    protected Ticket toTicket(int number) {
+        return new TicketRecordImpl(getLength(), number);
     }
 }
 
 class LambdaTicketGenerator extends AbstractGenerator {
 
-    @Override
-    protected IntFunction<Ticket> toTicket() {
-       return number -> (SixDigitTicket) () -> number;
+    public LambdaTicketGenerator() {
+        super(6);
     }
 
     @Override
-    protected IntStream getNumbersAsStream() {
-        return IntStream.rangeClosed(0, 1000000);
+    protected Ticket toTicket(int number) {
+       return (TheTicket) () -> number;
     }
 
-    @Override
-    public Optional<Ticket> getTicket(int number) {
-        if (number < 0 || number >= 1000000) {
-            return Optional.empty();
-        }
-        return Optional.of((SixDigitTicket) () -> number);
-    }
-
-    interface SixDigitTicket extends Ticket {
+    interface TheTicket extends Ticket {
         @Override
         default int getLength() {
             return 6;
