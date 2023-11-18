@@ -1,5 +1,6 @@
 package org.psu.java.example;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -7,6 +8,8 @@ import org.mockito.Mockito;
 import org.psu.java.example.application.FortunateTicketService;
 import org.psu.java.example.domain.Ticket;
 import org.psu.java.example.infrastructure.TicketGenerator;
+import org.psu.java.example.infrastructure.TicketImpl;
+import org.psu.java.example.infrastructure.TicketRecordImpl;
 
 import java.util.Iterator;
 import java.util.stream.IntStream;
@@ -25,10 +28,9 @@ public class FortunateTicketServiceTest {
         Iterator<Ticket> iterator = IntStream
                 .range(0, maxNum)
                 .mapToObj(n -> {
-                    Ticket ticket = Mockito.mock(Ticket.class);
-                    Mockito.when(ticket.getNumber()).thenReturn((long) n);
-                    Mockito.when(ticket.getLength()).thenReturn(4);
+                    Ticket ticket = Mockito.spy(new TicketImpl(4, n));
                     Mockito.when(ticket.isFortunate()).thenReturn(true);
+                    System.out.println(ticket);
                     return ticket;
                 }).iterator();
 
