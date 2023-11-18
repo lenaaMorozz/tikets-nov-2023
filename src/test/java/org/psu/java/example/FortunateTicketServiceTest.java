@@ -21,18 +21,18 @@ public class FortunateTicketServiceTest {
     private TicketGenerator ticketGenerator;
     private int maxNum;
     private FortunateTicketService service;
+    private Ticket ticket;
 
     @Before
     public void setUp() {
         maxNum = (int) Math.pow(10, 4);
+        ticket = Mockito.spy(new TicketImpl(4, maxNum - 1));
+        Mockito.when(ticket.isFortunate()).thenReturn(true);
+
         Iterator<Ticket> iterator = IntStream
                 .range(0, maxNum)
-                .mapToObj(n -> {
-                    Ticket ticket = Mockito.spy(new TicketImpl(4, n));
-                    Mockito.when(ticket.isFortunate()).thenReturn(true);
-                    System.out.println(ticket);
-                    return ticket;
-                }).iterator();
+                .mapToObj(n -> ticket)
+                .iterator();
 
         ticketGenerator = Mockito.mock(TicketGenerator.class);
         Mockito.when(ticketGenerator.getTickets()).thenReturn(iterator);
@@ -42,14 +42,13 @@ public class FortunateTicketServiceTest {
     @After
     public void tearDown() {
         service = null;
-
     }
 
     @Test
     public void testCount() {
         int actual = service.count(ticketGenerator.getTickets());
         assertEquals(maxNum, actual);
-
+        Mockito.verify(ticket, Mockito.atLeast(maxNum)).isFortunate();
 
     }
 }
