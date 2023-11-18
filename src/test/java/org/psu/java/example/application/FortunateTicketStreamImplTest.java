@@ -2,12 +2,15 @@ package org.psu.java.example.application;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.psu.java.example.domain.Ticket;
 import org.psu.java.example.infrastructure.TicketGenerator;
+import org.psu.java.example.infrastructure.TicketImpl;
+import org.psu.java.example.infrastructure.TicketRecordImpl;
 
 import java.util.Iterator;
 import java.util.stream.IntStream;
@@ -31,10 +34,9 @@ public class FortunateTicketStreamImplTest {
         Iterator<Ticket> mockIterator = IntStream
                 .range(0, maxNumber)
                 .mapToObj(number -> {
-                    Ticket mockTicket = Mockito.mock(Ticket.class);
-                    when(mockTicket.getNumber()).thenReturn((long) number);
-                    when(mockTicket.getLength()).thenReturn(4);
+                    Ticket mockTicket = Mockito.spy(new TicketImpl(4, number));
                     when(mockTicket.isFortunate()).thenReturn(true);
+                    System.out.println(mockTicket.toString());
                     return mockTicket;
                 })
                 .iterator();

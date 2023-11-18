@@ -18,7 +18,7 @@ public class TicketImpl implements Ticket {
     int length;
     private final long number;
 
-    TicketImpl(int length, long number) {
+    public TicketImpl(int length, long number) {
         int maxTicketNumber = (int) Math.pow(10, length) - 1;
         if (number > maxTicketNumber) {
             throw new IllegalArgumentException(String.format("%d > %d", number, maxTicketNumber));
