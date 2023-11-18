@@ -49,7 +49,7 @@ class EightDigitsTicketGenerator extends AbstractGenerator {
 
     @Override
     protected IntStream getNumbersAsStream() {
-        return IntStream.rangeClosed(0, 100_000_000);
+        return IntStream.range(0, 100_000_000);
     }
 
     interface TheTicket extends Ticket {
