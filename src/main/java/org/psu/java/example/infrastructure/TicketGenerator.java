@@ -73,7 +73,7 @@ class SixDigitsTicketGenerator implements TicketGenerator {
     @Override
     public Iterator<Ticket> getTickets() {
         return IntStream
-                .rangeClosed(0, 1000000)
+                .range(0, 1000000)
                 .mapToObj(number -> new TicketImpl(6, number))
                 .map(Ticket.class::cast)
                 .iterator();
