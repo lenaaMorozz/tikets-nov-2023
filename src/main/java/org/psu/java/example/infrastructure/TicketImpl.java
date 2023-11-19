@@ -14,9 +14,8 @@ import org.psu.java.example.domain.Ticket;
 public class TicketImpl implements Ticket {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private final
     int length;
-    private final long number;
+    long number;
 
     public TicketImpl(int length, long number) {
         int maxTicketNumber = (int) Math.pow(10, length) - 1;
