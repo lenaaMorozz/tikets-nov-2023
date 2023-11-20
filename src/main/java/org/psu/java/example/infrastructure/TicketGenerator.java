@@ -64,6 +64,12 @@ class EightDigitsTicketGenerator extends AbstractGenerator {
         return number -> (TheTicket) () -> number;
     }
 
+
+    @Override
+    protected IntStream getNumbersAsStream() {
+        return IntStream.range(0, 100_000_000);
+    }
+
     interface TheTicket extends Ticket {
         @Override
         default int getLength() {
