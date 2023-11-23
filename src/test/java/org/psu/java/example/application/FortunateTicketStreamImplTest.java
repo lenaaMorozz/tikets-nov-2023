@@ -6,7 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.psu.java.example.domain.Ticket;
 import org.psu.java.example.infrastructure.TicketGenerator;
 import org.psu.java.example.infrastructure.TicketImpl;
@@ -21,18 +26,22 @@ import static org.mockito.Mockito.*;
  * Тесты для {@link FortunateTicketStreamImpl}
  */
 @Slf4j
+@RunWith(MockitoJUnitRunner.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FortunateTicketStreamImplTest {
 
+    @Mock
     TicketGenerator ticketGenerator;
     int maxNumber;
+//    @InjectMocks
     FortunateTicketService service;
-    Ticket mockTicket;
+
+    @Spy
+    Ticket mockTicket = new TicketImpl(4, 0);
 
     @Before
     public void setUp() {
         maxNumber = (int) Math.pow(10, 4);
-        mockTicket = Mockito.spy(new TicketImpl(4, 0));
         when(mockTicket.isFortunate()).thenReturn(true);
         Iterator<Ticket> mockIterator = IntStream
                 .range(0, maxNumber)
@@ -41,7 +50,6 @@ public class FortunateTicketStreamImplTest {
                     return mockTicket;
                 })
                 .iterator();
-        ticketGenerator = Mockito.mock(TicketGenerator.class);
         when(ticketGenerator.getTickets()).thenReturn(mockIterator);
         service = new FortunateTicketStreamImpl();
     }
@@ -55,7 +63,8 @@ public class FortunateTicketStreamImplTest {
 
     @Test
     public void testCount() {
-        // given
+        // given Pivotal Software CRM Spring Cloud (Zuul, Eurica,...)
+        // EJB
         // when
         int actual = service.count(ticketGenerator.getTickets());
 
